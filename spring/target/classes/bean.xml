@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="now" class="java.util.Date"></bean>
+    <bean id="UserDao" class="dao.Implements.UserDaoImpl">
+          <constructor-arg name="id" value="1"></constructor-arg>
+          <property name="name" value="kai"></property>
+          <property name="date" ref="now"></property>
+          <property name="kubernetes">
+              <list>
+                  <value>master1</value>
+                  <value>master2</value>
+                  <value>work1</value>
+                  <value>work2</value>
+              </list>
+          </property>
+    </bean>
+    <bean id="UserService" class="service.Implements.UserServiceImpl">
+        <property name="userDao" ref="UserDao"></property>
+    </bean>
+    <bean id="UserController" class="controller.Implements.UserControllerImpl" scope="singleton">
+        <property name="userService" ref="UserService"></property>
+    </bean>
+
+    <bean id="proxy" class="proxy.SaveEnahce"></bean>
+    <aop:config>
+        <aop:pointcut id="enhance" expression="execution(* controller.Implements.UserControllerImpl.use(..))"/>
+        <aop:aspect id="enhanceA" ref="proxy">
+            <aop:around method="save" pointcut-ref="enhance"></aop:around>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
